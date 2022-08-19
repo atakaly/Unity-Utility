@@ -41,30 +41,36 @@ public class InputSystem : MonoSingleton<InputSystem>
         }
 #endif
 
-        Touch touch = Input.GetTouch(0);
-        
-        if(touch.phase == TouchPhase.Began)
+#if UNITY_ANDROID || UNITY_IPHONE
+
+        if(Input.touchCount > 0) 
         {
-            startInputPosition = touch.position;
-            Ray ray = Camera.main.ScreenPointToRay(startInputPosition);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+            Touch touch = Input.GetTouch(0);
+
+            if (touch.phase == TouchPhase.Began)
             {
-                OnPressed?.Invoke(hit.transform, Camera.main.ScreenToWorldPoint(startInputPosition));
+                startInputPosition = touch.position;
+                Ray ray = Camera.main.ScreenPointToRay(startInputPosition);
+                RaycastHit hit;
+                if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+                {
+                    OnPressed?.Invoke(hit.transform, Camera.main.ScreenToWorldPoint(startInputPosition));
+                }
+            }
+
+            if (touch.phase == TouchPhase.Moved)
+            {
+                Ray ray = Camera.main.ScreenPointToRay(touch.position);
+                RaycastHit hit;
+
+                if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+                {
+                    swipeDirection = SwipeDetector(startInputPosition, touch.position);
+                    OnSwipe?.Invoke(swipeDirection);
+                }
             }
         }
-
-        if(touch.phase == TouchPhase.Moved)
-        {
-            Ray ray = Camera.main.ScreenPointToRay(touch.position);
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity))
-            {
-                swipeDirection = SwipeDetector(startInputPosition, touch.position);
-                OnSwipe?.Invoke(swipeDirection);
-            }
-        }
+#endif
     }
 
     private SwipeDirection SwipeDetector(Vector2 inputStartPosition, Vector2 currentInputPosition)
