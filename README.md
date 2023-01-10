@@ -2,6 +2,9 @@
 
 This repository contains different scripts which can be used in Unity game engine. It is still in development progress.
 
+### Resource Manager:
+Static resource management system for storing in game resources (e.g. wood, coin). It saves data via Unity PlayerPrefs as Json file.
+
 ### Health System:
 
 Health System is ready-to-use class to create a health manager for an entity (such as player, enemy etc.).
